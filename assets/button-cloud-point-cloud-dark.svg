@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="250" height="52" viewBox="0 0 250 52" role="img" aria-label="Repository: cloud.point.cloud">
+<title>Repository: cloud.point.cloud</title>
+<style>text{font-family:ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'DejaVu Sans Mono', monospace;white-space:pre}.a{fill:#e8ae5b}.x{fill:#ece6da}.d{fill:#77736b}.l{fill:#4f4c47}.b{font-weight:700}</style>
+<rect x="6.5" y="4.5" width="240" height="43" rx="8" fill="#151619" stroke="#2b2c31"/>
+<path d="M20 47H233" stroke="#e8ae5b" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+<g transform="translate(48.45 26)" fill="none" stroke="#e8ae5b" color="#e8ae5b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M-6.5 -3.6 0 -7.3 6.5 -3.6V3.6L0 7.3 -6.5 3.6Z" opacity="0.45"/><g stroke="none" fill="currentColor"><circle cx="0" cy="-7.3" r="1.5"/><circle cx="6.5" cy="-3.6" r="1.5"/><circle cx="6.5" cy="3.6" r="1.5"/><circle cx="0" cy="7.3" r="1.5"/><circle cx="-6.5" cy="3.6" r="1.5"/><circle cx="-6.5" cy="-3.6" r="1.5"/><circle cx="0" cy="0" r="1.8"/><circle cx="-2.9" cy="-1.9" r="1"/><circle cx="3.1" cy="2.2" r="1"/><circle cx="2.6" cy="-2.6" r="0.9"/><circle cx="-2.4" cy="3" r="0.9"/></g></g>
+<text x="68.45" y="30.5" class="x" font-size="12.5" letter-spacing="1.1" textLength="145.1" xml:space="preserve">CLOUD.POINT.CLOUD</text>
+</svg>

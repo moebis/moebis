@@ -1,0 +1,53 @@
+{
+  "name": "Carl Moebis",
+  "login": "moebis",
+  "location": "Slovakia",
+  "website": "https://moebis.com",
+  "bio": "Building with AI, Tech, 3D Printers, Drones, and whatever else refuses to behave. I test things, make things, and share the useful bits.",
+  "portrait_alt": "ASCII portrait of Carl, laughing, in dark sunglasses",
+  "card": {
+    "header": "carl@moebis",
+    "title": "carl@moebis: ~",
+    "lines": [
+      ["Name", "Carl Moebis"],
+      ["Host", "Slovakia"],
+      ["Kernel", "test, make, share"],
+      ["Platform", "macOS, Apple Silicon"],
+      ["Language", "Swift"],
+      ["AI.Stack", "MLX, OpenAI Realtime"],
+      null,
+      ["Build.With", "AI, Tech"],
+      ["Build.Hardware", "3D Printers, Drones"],
+      ["Build.Also", "whatever else refuses to behave"],
+      null,
+      {"section": "Projects"},
+      ["asus-fusion-vpn", "VPN Fusion menu bar"],
+      ["cloud.point.cloud", "video to 3D point cloud"],
+      ["Whisper", "realtime dictation"],
+      null,
+      {"section": "Links"},
+      ["Web", "moebis.com"],
+      ["GitHub", "github.com/moebis"]
+    ]
+  },
+  "buttons": [
+    {"id": "web", "label": "moebis.com", "icon": "globe", "href": "https://moebis.com", "alt": "Website: moebis.com"},
+    {"id": "asus-fusion-vpn", "label": "asus-fusion-vpn", "icon": "shield", "href": "https://github.com/moebis/asus-fusion-vpn", "alt": "Repository: asus-fusion-vpn"},
+    {"id": "cloud-point-cloud", "label": "cloud.point.cloud", "icon": "points", "href": "https://github.com/moebis/cloud.point.cloud", "alt": "Repository: cloud.point.cloud"},
+    {"id": "whisper", "label": "Whisper", "icon": "mic", "href": "https://github.com/moebis/Whisper", "alt": "Repository: Whisper"}
+  ],
+  "projects": [
+    {"name": "asus-fusion-vpn", "url": "https://github.com/moebis/asus-fusion-vpn", "language": "Swift", "description": "Native macOS menu bar app for ASUSWRT VPN Fusion over LAN-only SSH."},
+    {"name": "cloud.point.cloud", "url": "https://github.com/moebis/cloud.point.cloud", "language": "Swift", "description": "Native Apple Silicon 3D point-cloud reconstruction from video or live camera, powered by MLX and LingBot-Map."},
+    {"name": "Whisper", "url": "https://github.com/moebis/Whisper", "language": "Swift", "description": "macOS menu bar dictation app powered by OpenAI realtime transcription."}
+  ],
+  "portrait": {
+    "crop": [0.1465, 0.0938, 0.7324, 0.8320],
+    "cols": 82,
+    "rows": 50,
+    "blur": 0.004,
+    "contrast": [0.15, 0.75],
+    "tone_weight": 6.0,
+    "shape_weight": 1.0
+  }
+}
