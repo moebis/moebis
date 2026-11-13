@@ -5,7 +5,8 @@ The output is deterministic. The same inputs always give the same bytes.
 
 Inputs:
   src/profile.json   public profile facts, card lines, buttons, portrait settings
-  src/portrait.txt   ASCII portrait (82 x 50 characters)
+  src/portrait.txt   light-mode ASCII portrait (82 x 50 characters)
+  src/portrait-dark.txt   dark-mode portrait sampled from the original photo
 
 Outputs:
   assets/card-dark.svg, assets/card-light.svg
@@ -15,7 +16,7 @@ Outputs:
 Usage:
   python3 src/build.py                  rebuild SVGs and README
   python3 src/build.py --check          exit 1 if a generated file is out of date
-  python3 src/build.py --photo PATH     regenerate src/portrait.txt from a photo,
+  python3 src/build.py --photo PATH     regenerate both portrait sources from a photo,
                                         then rebuild (needs ImageMagick 7)
 
 Only the --photo step needs ImageMagick. Everything else uses the Python 3
@@ -120,7 +121,7 @@ def _read_pgm(data):
     return [[pix[y * w + x] / 255.0 for x in range(w)] for y in range(h)]
 
 
-def photo_to_ascii(photo, cfg):
+def photo_to_ascii(photo, cfg, dark=False):
     cols, rows = cfg["cols"], cfg["rows"]
     iw, ih = (int(v) for v in _magick([str(photo), "-format", "%w %h", "info:"]).split())
     fx, fy, fw, fh = cfg["crop"]
@@ -138,6 +139,25 @@ def photo_to_ascii(photo, cfg):
         t = min(max(((1.0 - v) - lo) / (hi - lo), 0.0), 1.0)
         return t * t * (3.0 - 2.0 * t)
 
+    def inside_subject(x, y):
+        polygon = cfg["dark_silhouette"]
+        inside = False
+        for (ax, ay), (bx, by) in zip(polygon, polygon[1:] + polygon[:1]):
+            if (ay > y) != (by > y) and x < (bx - ax) * (y - ay) / (by - ay) + ax:
+                inside = not inside
+        return inside
+
+    def sample(x, y):
+        value = img[y][x]
+        if dark:
+            # Sample the photo's actual highlights; never invert old ASCII glyphs.
+            sx = fx + (x + 0.5) / (cols * 2) * fw
+            sy = fy + (y + 0.5) / (rows * 4) * fh
+            if not inside_subject(sx, sy):
+                return 0.0
+            value = 1.0 - value
+        return ink(value)
+
     tmpl = []
     for c in CHARS:
         t = TEMPLATES[c]
@@ -148,7 +168,7 @@ def photo_to_ascii(photo, cfg):
     for r in range(rows):
         out = []
         for c in range(cols):
-            v = [ink(img[r * 4 + j][c * 2 + i]) for j in range(4) for i in range(2)]
+            v = [sample(c * 2 + i, r * 4 + j) for j in range(4) for i in range(2)]
             vm = sum(v) / 8.0
             vd = [x - vm for x in v]
             best, best_e = " ", None
@@ -210,31 +230,6 @@ def info_segments(item, header):
     if dots < 3:
         raise ValueError(f"card line too long for {I_COLS} columns: {key}: {value}")
     return [(". ", "d"), (key, "a"), (": ", "d"), ("." * dots, "l"), (tail, "x")], False
-
-
-def inverse_portrait(portrait):
-    """Reverse glyph density inside each portrait row, preserving its outline."""
-    # Keep the area outside the subject empty instead of adding a bright box.
-    candidates = []
-    for char, template in TEMPLATES.items():
-        values = [min(1.0, max(0.0, v)) for v in template]
-        candidates.append((char, values, sum(values) / 8.0))
-    replacements = {}
-    for char, template in TEMPLATES.items():
-        target = [1.0 - min(1.0, max(0.0, v)) for v in template]
-        mean = sum(target) / 8.0
-        replacements[char] = min(
-            candidates,
-            key=lambda item: 48.0 * (item[2] - mean) ** 2
-            + sum(((v - item[2]) - (t - mean)) ** 2
-                  for v, t in zip(item[1], target)),
-        )[0]
-    result = []
-    for line in portrait:
-        body = line.strip(" ")
-        leading = len(line) - len(line.lstrip(" "))
-        result.append(" " * leading + "".join(replacements[c] for c in body))
-    return result
 
 
 def build_card(profile, portrait, theme):
@@ -455,11 +450,11 @@ def build_readme(profile):
 
 # ---------------------------------------------------------------------------
 
-def outputs(profile, portrait):
+def outputs(profile, portrait, dark_portrait):
     files = {}
     for theme in THEMES:
         files[ASSETS / f"card-{theme}.svg"] = build_card(
-            profile, inverse_portrait(portrait) if theme == "dark" else portrait, theme)
+            profile, dark_portrait if theme == "dark" else portrait, theme)
         for i, b in enumerate(profile["buttons"]):
             files[ASSETS / f"button-{b['id']}-{theme}.svg"] = build_button(b, i, theme)
     files[ROOT / "README.md"] = build_readme(profile)
@@ -468,7 +463,7 @@ def outputs(profile, portrait):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("--photo", type=Path, help="regenerate src/portrait.txt from this image")
+    ap.add_argument("--photo", type=Path, help="regenerate both portrait sources from this image")
     ap.add_argument("--check", action="store_true", help="fail if outputs are out of date")
     args = ap.parse_args()
 
@@ -478,10 +473,13 @@ def main():
     if args.photo:
         (SRC / "portrait.txt").write_text(photo_to_ascii(args.photo, profile["portrait"]),
                                           encoding="utf-8")
+        (SRC / "portrait-dark.txt").write_text(
+            photo_to_ascii(args.photo, profile["portrait"], dark=True), encoding="utf-8")
     portrait = (SRC / "portrait.txt").read_text(encoding="utf-8").split("\n")
+    dark_portrait = (SRC / "portrait-dark.txt").read_text(encoding="utf-8").split("\n")
 
     stale = []
-    for path, text in outputs(profile, portrait).items():
+    for path, text in outputs(profile, portrait, dark_portrait).items():
         old = path.read_text(encoding="utf-8") if path.exists() else None
         if old == text:
             continue

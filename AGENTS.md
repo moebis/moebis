@@ -14,8 +14,10 @@ This repository is the public GitHub profile README for `moebis`.
 
 ## Portrait
 
-- `src/portrait.txt` is the source of truth for the ASCII portrait. You can edit characters directly.
+- `src/portrait.txt` and `src/portrait-dark.txt` are the ASCII sources for each theme. You can edit characters directly.
 - To convert the original portrait image again, run `python3 src/build.py --photo PATH`. This step needs ImageMagick 7. The source image is not stored in this repository.
 - The conversion is deterministic. Settings are in the `portrait` block of `src/profile.json`.
-- Dark mode reverses glyph density inside the portrait outline. Light mode uses the source art directly.
+- `src/portrait-dark.txt` is sampled directly from the original photo for dark mode.
+- `portrait.dark_silhouette` traces the subject in normalized photo coordinates. It excludes background splatter.
+- The photo conversion updates both ASCII sources. Do not invert existing ASCII glyphs.
 - After a portrait change, view both card themes at README size before you commit.
