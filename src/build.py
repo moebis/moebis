@@ -212,6 +212,31 @@ def info_segments(item, header):
     return [(". ", "d"), (key, "a"), (": ", "d"), ("." * dots, "l"), (tail, "x")], False
 
 
+def inverse_portrait(portrait):
+    """Reverse glyph density inside each portrait row, preserving its outline."""
+    # Keep the area outside the subject empty instead of adding a bright box.
+    candidates = []
+    for char, template in TEMPLATES.items():
+        values = [min(1.0, max(0.0, v)) for v in template]
+        candidates.append((char, values, sum(values) / 8.0))
+    replacements = {}
+    for char, template in TEMPLATES.items():
+        target = [1.0 - min(1.0, max(0.0, v)) for v in template]
+        mean = sum(target) / 8.0
+        replacements[char] = min(
+            candidates,
+            key=lambda item: 48.0 * (item[2] - mean) ** 2
+            + sum(((v - item[2]) - (t - mean)) ** 2
+                  for v, t in zip(item[1], target)),
+        )[0]
+    result = []
+    for line in portrait:
+        body = line.strip(" ")
+        leading = len(line) - len(line.lstrip(" "))
+        result.append(" " * leading + "".join(replacements[c] for c in body))
+    return result
+
+
 def build_card(profile, portrait, theme):
     t = THEMES[theme]
     card = profile["card"]
@@ -433,7 +458,8 @@ def build_readme(profile):
 def outputs(profile, portrait):
     files = {}
     for theme in THEMES:
-        files[ASSETS / f"card-{theme}.svg"] = build_card(profile, portrait, theme)
+        files[ASSETS / f"card-{theme}.svg"] = build_card(
+            profile, inverse_portrait(portrait) if theme == "dark" else portrait, theme)
         for i, b in enumerate(profile["buttons"]):
             files[ASSETS / f"button-{b['id']}-{theme}.svg"] = build_button(b, i, theme)
     files[ROOT / "README.md"] = build_readme(profile)
