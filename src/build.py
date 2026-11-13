@@ -139,22 +139,10 @@ def photo_to_ascii(photo, cfg, dark=False):
         t = min(max(((1.0 - v) - lo) / (hi - lo), 0.0), 1.0)
         return t * t * (3.0 - 2.0 * t)
 
-    def inside_subject(x, y):
-        polygon = cfg["dark_silhouette"]
-        inside = False
-        for (ax, ay), (bx, by) in zip(polygon, polygon[1:] + polygon[:1]):
-            if (ay > y) != (by > y) and x < (bx - ax) * (y - ay) / (by - ay) + ax:
-                inside = not inside
-        return inside
-
     def sample(x, y):
         value = img[y][x]
         if dark:
             # Sample the photo's actual highlights; never invert old ASCII glyphs.
-            sx = fx + (x + 0.5) / (cols * 2) * fw
-            sy = fy + (y + 0.5) / (rows * 4) * fh
-            if not inside_subject(sx, sy):
-                return 0.0
             value = 1.0 - value
         return ink(value)
 
@@ -292,7 +280,8 @@ def build_card(profile, portrait, theme):
     out.append(f'<g font-size="12">{run(card["title"], W / 2, BAR_H / 2 + 4.2, 12, "d", "middle")}</g>')
 
     # Portrait.
-    out.append(f'<g class="p" fill="url(#fade)">')
+    portrait_fill = t["ink"] if theme == "dark" else "url(#fade)"
+    out.append(f'<g class="p" fill="{portrait_fill}">')
     for r, line in enumerate(portrait[:rows]):
         body = line.rstrip()
         lead = len(body) - len(body.lstrip(" "))

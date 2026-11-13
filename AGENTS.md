@@ -18,6 +18,7 @@ This repository is the public GitHub profile README for `moebis`.
 - To convert the original portrait image again, run `python3 src/build.py --photo PATH`. This step needs ImageMagick 7. The source image is not stored in this repository.
 - The conversion is deterministic. Settings are in the `portrait` block of `src/profile.json`.
 - `src/portrait-dark.txt` is sampled directly from the original photo for dark mode.
-- `portrait.dark_silhouette` traces the subject in normalized photo coordinates. It excludes background splatter.
+- Keep the full rectangular photo background in dark mode. Do not add a silhouette mask or cutout.
+- Dark mode uses a uniform portrait brightness to preserve the white background.
 - The photo conversion updates both ASCII sources. Do not invert existing ASCII glyphs.
 - After a portrait change, view both card themes at README size before you commit.
